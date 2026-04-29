@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elezioni Comunali Manduria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+
+  <!-- ── HEADER ─────────────────────────────────────────── -->
+  <header>
+    <div class="header-top">
+      <div>
+        <h1>Elezioni Comunali Manduria</h1>
+        <div class="subtitle">Comune di Manduria (TA) · Dati ufficiali</div>
+      </div>
+      <div class="year-toggle">
+        <button class="year-btn active" data-year="2020">2020</button>
+        <button class="year-btn" data-year="2026">2026</button>
+      </div>
+    </div>
+    <div class="chips" id="chips-container"></div>
+  </header>
+
+  <!-- ── SEARCH ─────────────────────────────────────────── -->
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-input" placeholder="Cerca candidato, lista o coalizione…" autocomplete="off">
+    <button id="search-clear" title="Cancella">✕</button>
+  </div>
+  <div id="search-results"></div>
+
+  <!-- ══════════════════════════════════════════════════════
+       PANNELLO 2020
+       ══════════════════════════════════════════════════════ -->
+  <div class="year-panel active" id="panel-2020">
+    <div class="tabs-wrap" id="tabs-2020">
+      <button class="tab-btn active" data-tab="s2020-sindaco">Candidati sindaco</button>
+      <button class="tab-btn" data-tab="s2020-liste">Voti per lista</button>
+      <button class="tab-btn" data-tab="s2020-pecoraro">Consiglieri Pecoraro</button>
+      <button class="tab-btn" data-tab="s2020-sammarco">Consiglieri Sammarco</button>
+      <button class="tab-btn" data-tab="s2020-ballottaggio">Ballottaggio</button>
+    </div>
+
+    <!-- Candidati sindaco -->
+    <div class="tab-panel active" id="s2020-sindaco">
+      <div class="card">
+        <div class="card-header">Primo turno · 20–21 settembre 2020 · Sezioni 30/30</div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Candidato</th><th class="num">Voti</th><th class="num">%</th><th>Esito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="muted">1</td><td class="fw5">Gregorio Pecoraro</td>
+              <td class="num">4.833</td><td class="num">26,93%</td>
+              <td><span class="badge b-new">Ballottaggio ✓</span></td>
+            </tr>
+            <tr>
+              <td class="muted">2</td><td class="fw5">Domenico Sammarco</td>
+              <td class="num">4.511</td><td class="num">25,14%</td>
+              <td><span class="badge b-new">Ballottaggio ✓</span></td>
+            </tr>
+            <tr>
+              <td class="muted">3</td><td class="fw5">Lorenzo Bullo</td>
+              <td class="num">4.206</td><td class="num">23,44%</td>
+              <td><span class="badge b-abs">Eliminato</span></td>
+            </tr>
+            <tr>
+              <td class="muted">4</td><td class="fw5">Cosimo Breccia</td>
+              <td class="num">2.370</td><td class="num">13,21%</td>
+              <td><span class="badge b-abs">Eliminato</span></td>
+            </tr>
+            <tr>
+              <td class="muted">5</td><td class="fw5">Dario Duggento</td>
+              <td class="num">1.682</td><td class="num">9,37%</td>
+              <td><span class="badge b-abs">Eliminato</span></td>
+            </tr>
+            <tr>
+              <td class="muted">6</td><td class="fw5">Leonardo Moccia</td>
+              <td class="num">344</td><td class="num">1,92%</td>
+              <td><span class="badge b-abs">Eliminato</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-header">Distribuzione voti — 1° turno</div>
+        <div style="padding:16px;"><div id="sindaco-bars-2020"></div></div>
+      </div>
+    </div>
+
+    <!-- Voti per lista -->
+    <div class="tab-panel" id="s2020-liste">
+      <div id="liste-2020-content"></div>
+    </div>
+
+    <!-- Consiglieri Pecoraro -->
+    <div class="tab-panel" id="s2020-pecoraro">
+      <div id="consiglieri-pecoraro-content"></div>
+    </div>
+
+    <!-- Consiglieri Sammarco -->
+    <div class="tab-panel" id="s2020-sammarco">
+      <div id="consiglieri-sammarco-content"></div>
+    </div>
+
+    <!-- Ballottaggio -->
+    <div class="tab-panel" id="s2020-ballottaggio">
+      <div class="card">
+        <div class="card-header">Ballottaggio · 4–5 ottobre 2020</div>
+        <table>
+          <thead><tr><th>Candidato</th><th class="num">Voti</th><th class="num">%</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="fw5">Gregorio Pecoraro</span> &nbsp;<span class="badge b-new">Eletto ✓</span></td>
+              <td class="num">6.974</td><td class="num">51,55%</td>
+            </tr>
+            <tr>
+              <td class="fw5">Domenico Sammarco</td>
+              <td class="num">6.555</td><td class="num">48,45%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-header">Rappresentazione visuale</div>
+        <div style="padding:16px;">
+          <div class="bar-wrap" style="margin-bottom:12px;">
+            <div style="width:110px;font-size:13px;font-weight:500;">Pecoraro</div>
+            <div class="bar-track" style="flex:1"><div class="bar-fill" style="width:51.55%;background:#2D6A4F;"></div></div>
+            <div class="bar-num" style="width:80px;text-align:right;">6.974 · 51,55%</div>
+          </div>
+          <div class="bar-wrap">
+            <div style="width:110px;font-size:13px;font-weight:500;">Sammarco</div>
+            <div class="bar-track" style="flex:1"><div class="bar-fill" style="width:48.45%;background:#1B4F82;"></div></div>
+            <div class="bar-num" style="width:80px;text-align:right;">6.555 · 48,45%</div>
+          </div>
+        </div>
+      </div>
+      <div class="info-box">
+        <strong>Curiosità storica:</strong> Manduria fu l'unico comune d'Italia in cui il ballottaggio vide
+        contrapporsi due candidati entrambi espressione di forze della maggioranza di governo nazionale
+        (M5S + centrosinistra civico vs PD). Pecoraro tornava sindaco dopo quasi vent'anni — aveva già
+        guidato la città dal 1994 al 2001.
+      </div>
+    </div>
+  </div><!-- /panel-2020 -->
+
+  <!-- ══════════════════════════════════════════════════════
+       PANNELLO 2026
+       ══════════════════════════════════════════════════════ -->
+  <div class="year-panel" id="panel-2026">
+    <div class="tabs-wrap" id="tabs-2026">
+      <button class="tab-btn active" data-tab="s2026-sindaco">Candidati sindaco</button>
+      <button class="tab-btn" data-tab="s2026-liste">Candidati consiglieri</button>
+      <button class="tab-btn" data-tab="s2026-tracking">Tracciamento 2020→2026</button>
+      <button class="tab-btn" data-tab="s2026-proiezione">Proiezione voti</button>
+    </div>
+
+    <!-- Candidati sindaco -->
+    <div class="tab-panel active" id="s2026-sindaco">
+      <div class="note-box">
+        <strong>Nota:</strong> Il PD, dopo settimane di lacerazioni interne, ha ufficializzato il sostegno a
+        Stefania Ruggieri (coordinamento "A Sinistra!"). Mariggiò rappresenta la continuità con l'amministrazione
+        uscente Pecoraro. Sammarco ha cambiato schieramento dal CSX al CDX rispetto al 2020.
+      </div>
+      <div class="card">
+        <div class="card-header">Elezioni 24–25 maggio 2026 · 6 candidati · 15 liste</div>
+        <table>
+          <thead><tr><th>Candidato</th><th>Area</th><th class="num">Liste</th><th>Status vs 2020</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="fw5">Domenico Sammarco</td>
+              <td><span class="badge b-cdx">Centrodestra</span></td>
+              <td class="num">7</td>
+              <td><span class="badge b-sw">Cambio coalizione</span></td>
+            </tr>
+            <tr>
+              <td class="fw5">Vito Andrea Mariggiò</td>
+              <td><span class="badge b-csx">CSX civico</span></td>
+              <td class="num">3</td>
+              <td><span class="badge b-cand">Consigliere → Sindaco</span></td>
+            </tr>
+            <tr>
+              <td class="fw5">Fabiana Rossetti</td>
+              <td><span class="badge b-m5s">M5S</span></td>
+              <td class="num">1</td>
+              <td><span class="badge b-cand">Consigliere → Sindaca</span></td>
+            </tr>
+            <tr>
+              <td class="fw5">Stefania Ruggieri</td>
+              <td><span class="badge b-csx">Sinistra / PD</span></td>
+              <td class="num">1</td>
+              <td><span class="badge b-new">Nuova candidatura</span></td>
+            </tr>
+            <tr>
+              <td class="fw5">Cosimo Lariccia</td>
+              <td><span class="badge b-ind">Civico Noscia</span></td>
+              <td class="num">2</td>
+              <td><span class="badge b-sw">Cambio coalizione</span></td>
+            </tr>
+            <tr>
+              <td class="fw5">Ferdinando Arnò</td>
+              <td><span class="badge b-ind">Civico</span></td>
+              <td class="num">1</td>
+              <td><span class="badge b-new">Nuova candidatura</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-header">Profilo candidati</div>
+        <table>
+          <thead><tr><th>Candidato</th><th>Ruolo / contesto 2020</th></tr></thead>
+          <tbody>
+            <tr><td class="fw5">Domenico Sammarco</td><td class="muted">Candidato sindaco CSX 2020 · 4.511 voti · 25,14% · poi ballottaggio perso</td></tr>
+            <tr><td class="fw5">Vito Andrea Mariggiò</td><td class="muted">Consigliere Lista Città Più (coal. Pecoraro) · 217 preferenze 2020</td></tr>
+            <tr><td class="fw5">Fabiana Rossetti</td><td class="muted">Consigliere Mov. Dem. con Manduria (coal. Pecoraro) · 61 preferenze 2020</td></tr>
+            <tr><td class="fw5">Stefania Ruggieri</td><td class="muted">Non candidata nel 2020 · Docente di economia aziendale</td></tr>
+            <tr><td class="fw5">Cosimo Lariccia</td><td class="muted">Lista Breccia (Noscia) 2020 · Civico</td></tr>
+            <tr><td class="fw5">Ferdinando Arnò</td><td class="muted">Non candidato nel 2020</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Candidati consiglieri -->
+    <div class="tab-panel" id="s2026-liste">
+      <div id="liste-2026-content"></div>
+    </div>
+
+    <!-- Tracciamento -->
+    <div class="tab-panel" id="s2026-tracking">
+      <div class="info-box">
+        <strong>Metodologia:</strong> Stato verificato dei più votati nel 2020 nelle liste 2026.
+        Fonte: liste ufficiali Comune di Manduria 26/04/2026 + TarantiniTime 27/04/2026.
+      </div>
+      <div class="card">
+        <div class="card-header">Tracciamento · Top preferenze 2020 → 2026</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th><th>Lista 2020</th><th class="num">Pref.</th>
+              <th>Status 2026</th><th>Posizione 2026</th>
+            </tr>
+          </thead>
+          <tbody id="tracking-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Proiezione voti -->
+    <div class="tab-panel" id="s2026-proiezione">
+      <div class="note-box">
+        <strong>Metodologia:</strong> Redistribuzione dei voti 2020 secondo le nuove appartenenze di lista.
+        Si assume ~90–95% di trasferimento della base storica, con dispersione per astensionismo e flussi incrociati.
+        Non è una previsione scientifica.
+      </div>
+      <div class="card">
+        <div class="card-header">Proiezione voti — stima e range</div>
+        <table>
+          <thead><tr><th>Candidato</th><th>Area</th><th class="num">Stima</th><th class="num">Min</th><th class="num">Max</th></tr></thead>
+          <tbody>
+            <tr><td class="fw5">Domenico Sammarco</td><td><span class="badge b-cdx">Centrodestra</span></td><td class="num fw5">7.900</td><td class="num muted">7.200</td><td class="num muted">8.500</td></tr>
+            <tr><td class="fw5">Vito Andrea Mariggiò</td><td><span class="badge b-csx">CSX civico</span></td><td class="num fw5">3.200</td><td class="num muted">2.800</td><td class="num muted">3.700</td></tr>
+            <tr><td class="fw5">Stefania Ruggieri</td><td><span class="badge b-csx">Sinistra / PD</span></td><td class="num fw5">1.700</td><td class="num muted">1.400</td><td class="num muted">2.100</td></tr>
+            <tr><td class="fw5">Fabiana Rossetti</td><td><span class="badge b-m5s">M5S</span></td><td class="num fw5">1.100</td><td class="num muted">900</td><td class="num muted">1.400</td></tr>
+            <tr><td class="fw5">Cosimo Lariccia</td><td><span class="badge b-ind">Civico Noscia</span></td><td class="num fw5">950</td><td class="num muted">700</td><td class="num muted">1.300</td></tr>
+            <tr><td class="fw5">Ferdinando Arnò</td><td><span class="badge b-ind">Civico</span></td><td class="num fw5">350</td><td class="num muted">200</td><td class="num muted">500</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-header">Grafico proiezione</div>
+        <div id="proiezione-chart-wrap">
+          <canvas id="proiezione-chart" height="260"></canvas>
+        </div>
+      </div>
+      <div class="info-box">
+        <strong>Scenario più probabile: ballottaggio Sammarco vs Mariggiò.</strong><br>
+        Sammarco CDX assorbe: base propria 2020 (4.511) + eredità Bullo/CDX (4.206) + Duggento (1.682) + Moccia (344)
+        = ~10.743 teorici, stimati 7.200–8.500 dopo dispersioni. 7 liste, organizzazione capillare.<br><br>
+        Il CSX è frammentato in tre candidature (Mariggiò + Ruggieri + Rossetti) per ~7.900 voti teorici complessivi.
+        Un'eventuale convergenza al ballottaggio potrebbe riaprire la sfida.<br><br>
+        Lariccia (Noscia) è la variabile: più voti prende, più avvantaggia Sammarco sottraendo voti al fronte progressista.
+      </div>
+    </div>
+  </div><!-- /panel-2026 -->
+
+  <!-- ── FONTI ───────────────────────────────────────────── -->
+  <div class="sources">
+    <strong>Fonti:</strong>
+    Dati 2020: Ministero dell'Interno · ManduriaOggi.it · Il Sole 24 Ore Elezioni &nbsp;·&nbsp;
+    Liste 2026: Comune di Manduria, pubblicazione ufficiale 26/04/2026 &nbsp;·&nbsp;
+    Analisi candidature 2026: TarantiniTime (27/04/2026) · TarantoToday · Quotidiano di Puglia &nbsp;·&nbsp;
+    Analisi al: 29/04/2026
+  </div>
+
+</div><!-- /container -->
+
+<script>
+  if (sessionStorage.getItem('manduria_auth') !== '1') {
+    window.location.replace('login.html');
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
