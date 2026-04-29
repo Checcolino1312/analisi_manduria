@@ -66,30 +66,33 @@ function renderListe2020() {
 
 // ── CONSIGLIERI 2020 ───────────────────────────────────────────
 function renderConsiglieri(data, containerId) {
-  const maxPref = Math.max(...data.flatMap(l => l.members.map(m => m.pref)));
+  const allPrefs = data.flatMap(l => l.members.map(m => m.pref)).filter(p => p != null);
+  const maxPref  = allPrefs.length ? Math.max(...allPrefs) : 1;
   document.getElementById(containerId).innerHTML = data.map(lista => `
     <div class="card" style="margin-bottom:16px;">
       <div class="card-header">
         <span class="dot" style="background:${lista.color};"></span>
         ${lista.listName}
+        ${lista.members.length === 0 ? '<span class="badge b-abs" style="margin-left:auto;">Dati non disponibili</span>' : ''}
       </div>
-      <table>
-        <thead><tr><th>#</th><th>Nome</th><th></th><th class="num">Pref.</th></tr></thead>
-        <tbody>
-          ${lista.members.map((m, i) => `
-            <tr>
-              <td class="muted" style="font-size:11px;">${i + 1}</td>
-              <td class="fw5">${m.name}</td>
-              <td class="bar-cell" style="min-width:80px;">
-                <div class="bar-track">
-                  <div class="bar-fill" style="width:${(m.pref / maxPref * 100).toFixed(1)}%;background:${lista.color};"></div>
-                </div>
-              </td>
-              <td class="num">${m.pref}</td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
+      ${lista.note ? `<div style="padding:10px 16px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--border);background:var(--surface2);">${lista.note}</div>` : ''}
+      ${lista.members.length > 0 ? `
+        <table>
+          <thead><tr><th>#</th><th>Nome</th><th></th><th class="num">Pref.</th></tr></thead>
+          <tbody>
+            ${lista.members.map((m, i) => `
+              <tr>
+                <td class="muted" style="font-size:11px;">${i + 1}</td>
+                <td class="fw5">${m.name}${m.note ? ` <span class="badge b-new" style="margin-left:6px;">${m.note}</span>` : ''}</td>
+                <td class="bar-cell" style="min-width:80px;">
+                  ${m.pref != null ? `<div class="bar-track"><div class="bar-fill" style="width:${(m.pref / maxPref * 100).toFixed(1)}%;background:${lista.color};"></div></div>` : ''}
+                </td>
+                <td class="num">${m.pref != null ? m.pref : '—'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      ` : ''}
     </div>
   `).join('');
 }
@@ -150,7 +153,7 @@ function renderTracking() {
     <tr>
       <td class="fw5">${t.name}</td>
       <td class="muted" style="font-size:12px;">${t.list20}</td>
-      <td class="num">${t.pref}</td>
+      <td class="num">${t.pref != null ? t.pref : '—'}</td>
       <td>${badge(t.status)}</td>
       <td style="font-size:12px;color:var(--muted);">${t.pos26}</td>
     </tr>
@@ -240,9 +243,9 @@ function buildSearchIndex() {
   CANDIDATI_2020.forEach(c => {
     idx.push({ name: c.name, meta: `Candidato sindaco · Coal. ${c.coal}`, votes: c.voti + ' voti', role: 'Candidato sindaco', year: 2020 });
   });
-  [...CONSIGLIERI_PECORARO, ...CONSIGLIERI_SAMMARCO].forEach(lista => {
+  [...CONSIGLIERI_PECORARO, ...CONSIGLIERI_SAMMARCO, ...CONSIGLIERI_BULLO, ...CONSIGLIERI_DUGGENTO, ...CONSIGLIERI_BRECCIA].forEach(lista => {
     lista.members.forEach(m => {
-      idx.push({ name: m.name, meta: lista.listName, votes: m.pref + ' pref.', role: 'Consigliere 2020', year: 2020 });
+      if (m.name) idx.push({ name: m.name, meta: lista.listName, votes: m.pref != null ? m.pref + ' pref.' : '—', role: 'Consigliere 2020', year: 2020 });
     });
   });
   [
@@ -330,6 +333,9 @@ renderSindacoBars();
 renderListe2020();
 renderConsiglieri(CONSIGLIERI_PECORARO, 'consiglieri-pecoraro-content');
 renderConsiglieri(CONSIGLIERI_SAMMARCO, 'consiglieri-sammarco-content');
+renderConsiglieri(CONSIGLIERI_BULLO,    'consiglieri-bullo-content');
+renderConsiglieri(CONSIGLIERI_BRECCIA,  'consiglieri-breccia-content');
+renderConsiglieri(CONSIGLIERI_DUGGENTO, 'consiglieri-duggento-content');
 renderListe2026();
 renderTracking();
 initTabs('tabs-2020');
