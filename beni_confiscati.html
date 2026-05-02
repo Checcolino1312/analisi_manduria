@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beni Confiscati · Manduria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* ── Estensioni specifiche per questa pagina ── */
+  .bc-hero {
+    background: linear-gradient(135deg, #1a2e1a 0%, #2D6A4F 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .bc-hero-icon { font-size: 48px; flex-shrink: 0; }
+  .bc-hero h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; margin: 0 0 6px; }
+  .bc-hero p  { margin: 0; opacity: .75; font-size: .9rem; line-height: 1.5; }
+
+  .stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat-pill {
+    background: #f5f5f0;
+    border: 1px solid #e0e0d8;
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-size: .83rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+  .stat-pill span.n { font-weight: 700; font-size: 1rem; color: #2D6A4F; }
+  .stat-pill.warn span.n { color: #b45309; }
+  .stat-pill.info span.n { color: #1B4F82; }
+  .stat-pill.neutral span.n { color: #555; }
+
+  /* Filtri */
+  .filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+  .filters-row label { font-size: .8rem; color: #888; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+  .filter-select {
+    padding: 7px 14px;
+    border: 1px solid #d8d8ce;
+    border-radius: 8px;
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    color: #222;
+    cursor: pointer;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .filter-select:focus { border-color: #2D6A4F; }
+
+  .reset-btn {
+    padding: 7px 16px;
+    border: 1px solid #d8d8ce;
+    border-radius: 8px;
+    background: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .85rem;
+    color: #666;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .reset-btn:hover { background: #f0f0e8; color: #222; }
+
+  /* Contatore risultati */
+  .result-count {
+    font-size: .82rem;
+    color: #888;
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+  .result-count strong { color: #2D6A4F; }
+
+  /* Tabella */
+  .bc-table-wrap { overflow-x: auto; }
+  .bc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+  }
+  .bc-table thead th {
+    background: #1a2e1a;
+    color: #fff;
+    padding: 11px 14px;
+    text-align: left;
+    font-weight: 500;
+    font-size: .8rem;
+    letter-spacing: .04em;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  .bc-table thead th:hover { background: #2D6A4F; }
+  .bc-table thead th.sort-asc::after  { content: ' ↑'; opacity:.7; }
+  .bc-table thead th.sort-desc::after { content: ' ↓'; opacity:.7; }
+  .bc-table tbody tr { border-bottom: 1px solid #eeeeea; transition: background .15s; }
+  .bc-table tbody tr:hover { background: #f8f8f3; }
+  .bc-table tbody tr.hidden { display: none; }
+  .bc-table td { padding: 10px 14px; vertical-align: top; }
+  .bc-table td.n-col { color: #888; font-size: .82rem; white-space: nowrap; padding-top: 12px; }
+  .bc-table td.addr { font-weight: 500; }
+  .bc-table td.cat  { white-space: nowrap; }
+  .bc-table td.note { font-size: .82rem; color: #555; max-width: 280px; }
+  .bc-table td.id   { font-size: .75rem; color: #aaa; font-family: monospace; white-space: nowrap; }
+
+  /* Badge stato */
+  .badge-stato {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: .75rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .s-asl      { background: #d1fae5; color: #065f46; }
+  .s-pnrr     { background: #dbeafe; color: #1e40af; }
+  .s-occupato { background: #fef3c7; color: #92400e; }
+  .s-lavori   { background: #ede9fe; color: #5b21b6; }
+  .s-inutilizzato { background: #f3f4f6; color: #4b5563; }
+
+  /* Badge tipologia */
+  .badge-tipo {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: .73rem;
+    font-weight: 500;
+    background: #f0f0e8;
+    color: #444;
+    white-space: nowrap;
+  }
+  .t-appartamento { background: #ecfdf5; color: #065f46; }
+  .t-locale       { background: #fff7ed; color: #9a3412; }
+  .t-terreno      { background: #fef9c3; color: #713f12; }
+  .t-altro        { background: #f5f3ff; color: #5b21b6; }
+
+  /* Fonte nota */
+  .fonte-badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: .7rem;
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 48px 24px;
+    color: #aaa;
+    font-size: .95rem;
+    display: none;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .85rem;
+    color: #2D6A4F;
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-weight: 500;
+    transition: opacity .2s;
+  }
+  .back-link:hover { opacity: .7; }
+
+  @media (max-width: 700px) {
+    .bc-hero { flex-direction: column; gap: 12px; }
+    .bc-table td.id, .bc-table th:last-child, .bc-table td:last-child { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="header-top">
+      <div>
+        <h1>Patrimonio Confiscato · Manduria</h1>
+        <div class="subtitle">Comune di Manduria (TA) · Beni trasferiti ai sensi del D.Lgs. 159/2011</div>
+      </div>
+    </div>
+  </header>
+
+  <a href="index.html" class="back-link">← Torna alle Elezioni</a>
+
+  <!-- ── HERO ── -->
+  <div class="bc-hero">
+    <div class="bc-hero-icon">🏛️</div>
+    <div>
+      <h2>Beni immobili confiscati alla criminalità organizzata</h2>
+      <p>Elenco ufficiale aggiornato all'<strong>11 aprile 2025</strong> · Fonte: Amministrazione Trasparente del Comune di Manduria (atto n.&nbsp;153 del 02/09/2024) · Dati unificati da CSV ufficiale + schede ministeriali PDF (atto 8344). Il bene n.&nbsp;16 è presente esclusivamente nel PDF e assente nell'esportazione CSV.</p>
+    </div>
+  </div>
+
+  <!-- ── STATISTICHE ── -->
+  <div class="stats-bar" id="stats-bar">
+    <div class="stat-pill info"><span class="n" id="tot">34</span> unità catastali totali</div>
+    <div class="stat-pill"><span class="n" id="n-app">—</span> appartamenti</div>
+    <div class="stat-pill"><span class="n" id="n-loc">—</span> locali commerciali</div>
+    <div class="stat-pill neutral"><span class="n" id="n-ter">—</span> terreni</div>
+    <div class="stat-pill warn"><span class="n" id="n-occ">—</span> occupati abusivamente</div>
+    <div class="stat-pill info"><span class="n" id="n-pnrr">—</span> PNRR</div>
+    <div class="stat-pill"><span class="n" id="n-asl">—</span> ceduti ASL</div>
+  </div>
+
+  <!-- ── FILTRI ── -->
+  <div class="card">
+    <div class="card-header">Filtri e ricerca</div>
+    <div style="padding:16px;">
+      <div class="search-wrap" style="margin-bottom:12px;">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Cerca per indirizzo, zona, ID catastale…" autocomplete="off">
+        <button id="search-clear" title="Cancella">✕</button>
+      </div>
+      <div class="filters-row">
+        <label>Tipologia</label>
+        <select class="filter-select" id="f-tipo">
+          <option value="">Tutte</option>
+          <option value="Appartamento">Appartamento</option>
+          <option value="Locale commerciale">Locale commerciale</option>
+          <option value="Terreno">Terreno</option>
+          <option value="Bene comune">Bene comune</option>
+        </select>
+        <label>Stato d'uso</label>
+        <select class="filter-select" id="f-stato">
+          <option value="">Tutti</option>
+          <option value="ASL">Ceduto ASL</option>
+          <option value="PNRR">Progetto PNRR</option>
+          <option value="Occupato">Occupato abusivamente</option>
+          <option value="Lavori">Lavori in corso</option>
+          <option value="Non utilizzato">Non utilizzato</option>
+        </select>
+        <label>Zona</label>
+        <select class="filter-select" id="f-zona">
+          <option value="">Tutte</option>
+          <option value="Centro">Centro urbano</option>
+          <option value="Laccello">Contrada Laccello</option>
+          <option value="Giardinello">Loc. Giardinello</option>
+          <option value="San Pietro">San Pietro in Bevagna</option>
+          <option value="Marina">Zona Marina</option>
+        </select>
+        <button class="reset-btn" id="reset-filters">↺ Reset</button>
+      </div>
+      <div class="result-count" id="result-count"></div>
+    </div>
+  </div>
+
+  <!-- ── TABELLA ── -->
+  <div class="card" style="margin-top:16px;">
+    <div class="card-header">Elenco completo beni confiscati <span style="font-weight:400;opacity:.6;font-size:.85em;">(clicca intestazione per ordinare)</span></div>
+    <div class="bc-table-wrap">
+      <table class="bc-table" id="bc-table">
+        <thead>
+          <tr>
+            <th data-col="num">#</th>
+            <th data-col="tipo">Tipologia</th>
+            <th data-col="consistenza">Consistenza</th>
+            <th data-col="indirizzo">Indirizzo</th>
+            <th data-col="zona">Zona</th>
+            <th data-col="stato">Stato d'uso</th>
+            <th data-col="note">Note / Progetto</th>
+            <th data-col="id">ID Catastale</th>
+          </tr>
+        </thead>
+        <tbody id="bc-tbody">
+        </tbody>
+      </table>
+      <div class="no-results" id="no-results">Nessun bene corrisponde ai filtri selezionati.</div>
+    </div>
+  </div>
+
+  <!-- ── LEGENDA ── -->
+  <div class="card" style="margin-top:16px;">
+    <div class="card-header">Legenda stati d'uso</div>
+    <div style="padding:16px;display:flex;flex-wrap:wrap;gap:10px;">
+      <span class="badge-stato s-asl">Ceduto ASL</span>
+      <span class="badge-stato s-pnrr">Progetto PNRR</span>
+      <span class="badge-stato s-occupato">Occupato abusivamente</span>
+      <span class="badge-stato s-lavori">Lavori in corso</span>
+      <span class="badge-stato s-inutilizzato">Non utilizzato</span>
+    </div>
+    <div style="padding: 0 16px 16px; font-size:.83rem; color:#666; line-height:1.6;">
+      <strong>Fonte normativa:</strong> Art. 48 D.Lgs. 159/2011 (Codice Antimafia) — I beni confiscati alla criminalità organizzata vengono trasferiti al patrimonio disponibile del Comune per finalità istituzionali o sociali.<br>
+      <strong>PNRR riferimento:</strong> Missione 5 · Componente 3 · Intervento 2 (Valorizzazione beni confiscati) e Investimento Case di Comunità/Autonomia.
+    </div>
+  </div>
+
+  <!-- ── FONTI ── -->
+  <div class="sources">
+    <strong>Fonti:</strong>
+    CSV "Elenco_Beni_Confiscati_11_04_2025" · Comune di Manduria, pubblicazione trasparenza n.153 del 02/09/2024 &nbsp;·&nbsp;
+    PDF ministeriale atto 8344 (schede individuali per bene) &nbsp;·&nbsp;
+    <span class="fonte-badge">⚠ bene n.16 solo da PDF</span> &nbsp;·&nbsp;
+    Aggiornamento dati: 11/04/2025
+  </div>
+
+  <footer class="site-footer">
+    Dati aggiornati all'11/04/2025 · Elaborazione su base documenti ufficiali Comune di Manduria
+  </footer>
+
+</div><!-- /container -->
+
+<script>
+if (sessionStorage.getItem('manduria_auth') !== '1') {
+  window.location.replace('login.html');
+}
+
+// ════════════════════════════════════════════════════
+// DATASET UNIFICATO (CSV + PDF, incluso bene 16 da PDF)
+// ════════════════════════════════════════════════════
+const beni = [
+  {
+    num: "1a", tipo: "Appartamento", consistenza: "5,5 vani",
+    indirizzo: "Via Della Fortuna, 67/B – PT", zona: "Centro",
+    stato: "ASL", stato_label: "Ceduto ASL",
+    note: "Presidio medico estivo · ASL Taranto (Delib. C.S. n.11 del 21/05/2010, durata illimitata)",
+    foglio: "142", particella: "5834", sub: "/",
+    id_anbsc: "I-TA-11887-S", id_open: "I-TA-169495", fonte_extra: false
+  },
+  {
+    num: "1b", tipo: "Appartamento", consistenza: "4 vani",
+    indirizzo: "Via Della Fortuna, 67/B – PP", zona: "Centro",
+    stato: "ASL", stato_label: "Ceduto ASL",
+    note: "Presidio medico estivo · ASL Taranto (Delib. C.S. n.12 del 21/05/2010, durata illimitata)",
+    foglio: "142", particella: "5834", sub: "2",
+    id_anbsc: "I-TA-11887-S", id_open: "I-TA-169495", fonte_extra: false
+  },
+  {
+    num: "2", tipo: "Appartamento", consistenza: "4,5 vani",
+    indirizzo: "Via Borraco n.c. 69", zona: "Centro",
+    stato: "PNRR", stato_label: "Progetto PNRR",
+    note: "Riqualificazione per Pronto Soccorso e Consultorio · Fondi PNRR M5-C3-I2 · Inizio lavori 10/12/2024, fine prevista 30/06/2025",
+    foglio: "142", particella: "701", sub: "/",
+    id_anbsc: "I-TA-11888-S", id_open: "I-TA-169499", fonte_extra: false
+  },
+  {
+    num: "3", tipo: "Locale commerciale", consistenza: "155 mq",
+    indirizzo: "S.P. n.122 n.51 Piano T-1", zona: "San Pietro",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "San Pietro in Bevagna – C.da Bosco Ancella",
+    foglio: "143", particella: "590", sub: "1",
+    id_anbsc: "I-TA-25640-S", id_open: "I-TA-138041", fonte_extra: false
+  },
+  {
+    num: "4", tipo: "Appartamento", consistenza: "5 vani · 94 mq",
+    indirizzo: "S.P. n.122 n.51 Piano 1", zona: "San Pietro",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "San Pietro in Bevagna – C.da Bosco Ancella",
+    foglio: "143", particella: "590", sub: "2",
+    id_anbsc: "I-TA-25681-S", id_open: "I-TA-162006", fonte_extra: false
+  },
+  {
+    num: "5a", tipo: "Appartamento", consistenza: "3,5 vani",
+    indirizzo: "Vico Sala n.23-25 PT-P1", zona: "Centro",
+    stato: "Occupato", stato_label: "Occupato abusivamente",
+    note: "Occupato da indigenti · Vico Sala 23-25",
+    foglio: "147", particella: "834", sub: "1",
+    id_anbsc: "I-TA-25634-S", id_open: "I-TA-137957", fonte_extra: false
+  },
+  {
+    num: "5b", tipo: "Appartamento", consistenza: "41 mq",
+    indirizzo: "Vico I Via Card. T.M. Ferrara n.18 PT", zona: "Centro",
+    stato: "Occupato", stato_label: "Occupato abusivamente",
+    note: "Occupato da indigenti · Vico Sala 23-25",
+    foglio: "147", particella: "834", sub: "2",
+    id_anbsc: "I-TA-25634-S", id_open: "I-TA-137957", fonte_extra: false
+  },
+  {
+    num: "6a", tipo: "Appartamento", consistenza: "1 vano",
+    indirizzo: "Via Bonaventura Camerario n.1 – PT", zona: "Centro",
+    stato: "Occupato", stato_label: "Occupato abusivamente",
+    note: "Occupato da indigenti · Via B. Camerario 1-5",
+    foglio: "147", particella: "835", sub: "-",
+    id_anbsc: "I-TA-25637-S", id_open: "I-TA-137982", fonte_extra: false
+  },
+  {
+    num: "6b", tipo: "Appartamento", consistenza: "2,5 vani",
+    indirizzo: "Via Bonaventura Camerario n.5-7 – PT", zona: "Centro",
+    stato: "Occupato", stato_label: "Occupato abusivamente",
+    note: "Occupato da indigenti · Via B. Camerario 1-5",
+    foglio: "147", particella: "836", sub: "-",
+    id_anbsc: "I-TA-25637-S", id_open: "I-TA-137982", fonte_extra: false
+  },
+  {
+    num: "7", tipo: "Appartamento", consistenza: "7 vani",
+    indirizzo: "Piazza Risorgimento – P1", zona: "Centro",
+    stato: "ASL", stato_label: "Ceduto ASL",
+    note: "Sede Dipartimento Prevenzione ASL/TA · Prot. Intesa 21/10/2021 · 20 anni dal 04/09/2024 al 04/09/2044",
+    foglio: "49", particella: "804", sub: "20",
+    id_anbsc: "I-TA-27324-S", id_open: "I-TA-251383", fonte_extra: false
+  },
+  {
+    num: "8", tipo: "Appartamento", consistenza: "6,5 vani",
+    indirizzo: "Piazza Risorgimento – P1", zona: "Centro",
+    stato: "ASL", stato_label: "Ceduto ASL",
+    note: "Sede Dipartimento Prevenzione ASL/TA · Prot. Intesa 21/10/2021 · 20 anni dal 04/09/2024 al 04/09/2044",
+    foglio: "49", particella: "804", sub: "21",
+    id_anbsc: "I-TA-27325-S", id_open: "I-TA-251387", fonte_extra: false
+  },
+  {
+    num: "9", tipo: "Appartamento", consistenza: "7 vani",
+    indirizzo: "Piazza Risorgimento – P2", zona: "Centro",
+    stato: "ASL", stato_label: "Ceduto ASL",
+    note: "Sede Dipartimento Prevenzione ASL/TA · Prot. Intesa 21/10/2021 · 20 anni dal 04/09/2024 al 04/09/2044",
+    foglio: "49", particella: "804", sub: "22",
+    id_anbsc: "I-TA-27326-S", id_open: "I-TA-251395", fonte_extra: false
+  },
+  {
+    num: "10", tipo: "Appartamento", consistenza: "6,5 vani",
+    indirizzo: "Piazza Risorgimento – PS-P2", zona: "Centro",
+    stato: "ASL", stato_label: "Ceduto ASL",
+    note: "Sede Dipartimento Prevenzione ASL/TA · Prot. Intesa 21/10/2021 · 20 anni dal 04/09/2024 al 04/09/2044",
+    foglio: "49", particella: "804", sub: "23",
+    id_anbsc: "I-TA-27327-S", id_open: "I-TA-251401", fonte_extra: false
+  },
+  {
+    num: "11a", tipo: "Appartamento", consistenza: "6 vani",
+    indirizzo: "Via Erodoto n.74 PT", zona: "Laccello",
+    stato: "PNRR", stato_label: "Progetto PNRR",
+    note: "Case di Autonomia · Progetto PNRR ammesso e finanziato · Non ancora affidato",
+    foglio: "62", particella: "1225", sub: "1",
+    id_anbsc: "I-TA-25635-S", id_open: "I-TA-137963", fonte_extra: false
+  },
+  {
+    num: "11b", tipo: "Appartamento", consistenza: "6 vani",
+    indirizzo: "C.da Cavallone s.n.c.", zona: "Laccello",
+    stato: "PNRR", stato_label: "Progetto PNRR",
+    note: "Case di Autonomia · Progetto PNRR ammesso e finanziato · Non ancora affidato",
+    foglio: "62", particella: "1225", sub: "2",
+    id_anbsc: "I-TA-25635-S", id_open: "I-TA-137963", fonte_extra: false
+  },
+  {
+    num: "12", tipo: "Appartamento", consistenza: "4 vani",
+    indirizzo: "Strada Vicinale Marina PT", zona: "Marina",
+    stato: "PNRR", stato_label: "Progetto PNRR",
+    note: "Case di Autonomia · Progetto PNRR ammesso e finanziato · Non ancora affidato · C.da Marina via 117Bter",
+    foglio: "142", particella: "402", sub: "-",
+    id_anbsc: "", id_open: "I-TA-3812", fonte_extra: false
+  },
+  {
+    num: "13a", tipo: "Appartamento", consistenza: "2,5 vani",
+    indirizzo: "Via S. Gigli n.8 PT", zona: "Centro",
+    stato: "Occupato", stato_label: "Occupato abusivamente",
+    note: "Occupato da indigenti · Via G. Salvemini nn.8-10",
+    foglio: "147", particella: "3471", sub: "1",
+    id_anbsc: "", id_open: "I-TA-3833", fonte_extra: false
+  },
+  {
+    num: "13b", tipo: "Appartamento", consistenza: "5,5 vani",
+    indirizzo: "Via G. Salvemini n.10 PT-P1", zona: "Centro",
+    stato: "Occupato", stato_label: "Occupato abusivamente",
+    note: "Occupato da indigenti · Via G. Salvemini nn.8-10",
+    foglio: "147", particella: "3471", sub: "3",
+    id_anbsc: "", id_open: "I-TA-3833", fonte_extra: false
+  },
+  {
+    num: "14a", tipo: "Appartamento", consistenza: "7 vani",
+    indirizzo: "Via C. Cantù n.16 PS-PT-P1", zona: "Centro",
+    stato: "PNRR", stato_label: "Progetto PNRR",
+    note: "Case di Autonomia · Progetto PNRR ammesso e finanziato · Non ancora affidato",
+    foglio: "147", particella: "659", sub: "1",
+    id_anbsc: "", id_open: "I-TA-3841", fonte_extra: false
+  },
+  {
+    num: "14b", tipo: "Appartamento", consistenza: "5 vani",
+    indirizzo: "Via C. Cantù s.n.c. P1", zona: "Centro",
+    stato: "PNRR", stato_label: "Progetto PNRR",
+    note: "Case di Autonomia · Progetto PNRR ammesso e finanziato · Non ancora affidato",
+    foglio: "147", particella: "659", sub: "2",
+    id_anbsc: "", id_open: "I-TA-3841", fonte_extra: false
+  },
+  {
+    num: "15", tipo: "Appartamento", consistenza: "180 mq",
+    indirizzo: "Via T.N. D'Aquino S1", zona: "Giardinello",
+    stato: "Lavori", stato_label: "Lavori in corso",
+    note: "Residenza sociale · PNRR Next Generation EU · Lavori iniziati dic.2024, fine prevista 30/06/2025 · Sub.1",
+    foglio: "48", particella: "650", sub: "1",
+    id_anbsc: "", id_open: "I-TA-19018", fonte_extra: false
+  },
+  {
+    num: "16", tipo: "Appartamento", consistenza: "7,5 vani",
+    indirizzo: "Via T.N. D'Aquino S1", zona: "Giardinello",
+    stato: "Lavori", stato_label: "Lavori in corso",
+    note: "Residenza sociale · PNRR Next Generation EU · Lavori iniziati dic.2024, fine prevista 30/06/2025 · Sub.3",
+    foglio: "48", particella: "650", sub: "3",
+    id_anbsc: "", id_open: "I-TA-19027", fonte_extra: true  // ← SOLO NEL PDF
+  },
+  {
+    num: "17", tipo: "Appartamento", consistenza: "7,5 vani",
+    indirizzo: "Via T.N. D'Aquino S1", zona: "Giardinello",
+    stato: "Lavori", stato_label: "Lavori in corso",
+    note: "Residenza sociale · PNRR Next Generation EU · Lavori iniziati dic.2024, fine prevista 30/06/2025 · Sub.4",
+    foglio: "48", particella: "650", sub: "4",
+    id_anbsc: "", id_open: "I-TA-19035", fonte_extra: false
+  },
+  {
+    num: "18", tipo: "Appartamento", consistenza: "7,5 vani",
+    indirizzo: "Via T.N. D'Aquino S1", zona: "Giardinello",
+    stato: "Lavori", stato_label: "Lavori in corso",
+    note: "Residenza sociale · PNRR Next Generation EU · Lavori iniziati dic.2024, fine prevista 30/06/2025 · Sub.5",
+    foglio: "48", particella: "650", sub: "5",
+    id_anbsc: "", id_open: "I-TA-3824", fonte_extra: false
+  },
+  {
+    num: "19", tipo: "Terreno", consistenza: "2.688 mq",
+    indirizzo: "C.da Vento", zona: "Centro",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "Terreno agricolo · Contrada Vento",
+    foglio: "126", particella: "5", sub: "-",
+    id_anbsc: "I-TA-25642-S", id_open: "I-TA-138053", fonte_extra: false
+  },
+  {
+    num: "20", tipo: "Appartamento", consistenza: "4,5 vani",
+    indirizzo: "C.da Chidro PT – San Pietro in Bevagna", zona: "San Pietro",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "C.da Specchiarica (c/o Centro Commerciale)",
+    foglio: "143", particella: "5457 (ex 3117)", sub: "1",
+    id_anbsc: "I-TA-25644-S", id_open: "I-TA-138082", fonte_extra: false
+  },
+  {
+    num: "21", tipo: "Locale commerciale", consistenza: "41 mq",
+    indirizzo: "S.P. n.122 s.n.c. PT – San Pietro in Bevagna", zona: "San Pietro",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "C.da Specchiarica (c/o Centro Commerciale)",
+    foglio: "143", particella: "5458 (ex 3117)", sub: "1",
+    id_anbsc: "I-TA-25687-S", id_open: "I-TA-239317", fonte_extra: false
+  },
+  {
+    num: "22", tipo: "Terreno", consistenza: "9.923 mq",
+    indirizzo: "Via del Fiume – San Pietro in Bevagna", zona: "San Pietro",
+    stato: "Lavori", stato_label: "Lavori in corso",
+    note: "Parcheggio ecosostenibile in corso · C.da Marina · Part. 3858-3859-3862-3863-3864-3865",
+    foglio: "143", particella: "3858-3865", sub: "-",
+    id_anbsc: "I-TA-25641", id_open: "I-TA-138047", fonte_extra: false
+  },
+  {
+    num: "23-27 (a)", tipo: "Locale commerciale", consistenza: "155 mq",
+    indirizzo: "S.P. n.122 n.51 PT-P1 – Bosco Ancella", zona: "San Pietro",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "Gruppo beni 23-27 · San Pietro in Bevagna – Bosco Ancella (vd. anche schede nn.3-4)",
+    foglio: "143", particella: "590", sub: "1",
+    id_anbsc: "I-TA-25682/3/4/5/6-S", id_open: "I-TA-162011/15", fonte_extra: false
+  },
+  {
+    num: "23-27 (b)", tipo: "Appartamento", consistenza: "5 vani",
+    indirizzo: "S.P. n.122 n.51 P1 – Bosco Ancella", zona: "San Pietro",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "Gruppo beni 23-27 · San Pietro in Bevagna – Bosco Ancella",
+    foglio: "143", particella: "590", sub: "2",
+    id_anbsc: "I-TA-25682/3/4/5/6-S", id_open: "I-TA-162011/15", fonte_extra: false
+  },
+  {
+    num: "23-27 (c)", tipo: "Bene comune", consistenza: "BCNC",
+    indirizzo: "S.P. n.122 – Bosco Ancella", zona: "San Pietro",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "Bene comune non censito · Gruppo beni 23-27",
+    foglio: "143", particella: "590", sub: "3",
+    id_anbsc: "I-TA-25682/3/4/5/6-S", id_open: "I-TA-162011/15", fonte_extra: false
+  },
+  {
+    num: "28", tipo: "Terreno", consistenza: "272 mq",
+    indirizzo: "C.da Laccello – Via Erodoto", zona: "Laccello",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "Terreno agricolo",
+    foglio: "62", particella: "1232", sub: "-",
+    id_anbsc: "I-TA-25636", id_open: "I-TA-137969", fonte_extra: false
+  },
+  {
+    num: "29", tipo: "Appartamento", consistenza: "F/3",
+    indirizzo: "Via F. Ribezzo n.c. 26", zona: "Laccello",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "Via F. Ribezzo s.n.c.",
+    foglio: "62", particella: "5796 (ex 1456)", sub: "1",
+    id_anbsc: "I-TA-25638-S", id_open: "I-TA-137995", fonte_extra: false
+  },
+  {
+    num: "30", tipo: "Terreno", consistenza: "4.510 mq",
+    indirizzo: "C.da Laccello", zona: "Laccello",
+    stato: "Non utilizzato", stato_label: "Non utilizzato",
+    note: "Terreno agricolo",
+    foglio: "62", particella: "654", sub: "-",
+    id_anbsc: "I-TA-25639-S", id_open: "I-TA-138035", fonte_extra: false
+  }
+];
+
+// ── Helpers
+const statoClass = { ASL: 's-asl', PNRR: 's-pnrr', Occupato: 's-occupato', Lavori: 's-lavori', 'Non utilizzato': 's-inutilizzato' };
+const tipoClass  = { Appartamento: 't-appartamento', 'Locale commerciale': 't-locale', Terreno: 't-terreno', 'Bene comune': 't-altro' };
+
+function tipoNorm(t) {
+  if (t === 'Terreno') return 'Terreno';
+  return t;
+}
+
+// ── Render statistiche
+function updateStats(filtered) {
+  const f = filtered || beni;
+  document.getElementById('tot').textContent   = f.length;
+  document.getElementById('n-app').textContent = f.filter(b => b.tipo === 'Appartamento').length;
+  document.getElementById('n-loc').textContent = f.filter(b => b.tipo === 'Locale commerciale').length;
+  document.getElementById('n-ter').textContent = f.filter(b => b.tipo === 'Terreno').length;
+  document.getElementById('n-occ').textContent = f.filter(b => b.stato === 'Occupato').length;
+  document.getElementById('n-pnrr').textContent = f.filter(b => b.stato === 'PNRR').length;
+  document.getElementById('n-asl').textContent  = f.filter(b => b.stato === 'ASL').length;
+}
+
+// ── Render tabella
+function renderTable(data) {
+  const tbody = document.getElementById('bc-tbody');
+  tbody.innerHTML = data.map(b => `
+    <tr>
+      <td class="n-col">${b.num}${b.fonte_extra ? ' <span class="fonte-badge" title="Presente solo nel PDF, assente nel CSV">PDF</span>' : ''}</td>
+      <td class="cat"><span class="badge-tipo ${tipoClass[b.tipo] || 't-altro'}">${b.tipo}</span></td>
+      <td>${b.consistenza}</td>
+      <td class="addr">${b.indirizzo}</td>
+      <td>${b.zona}</td>
+      <td><span class="badge-stato ${statoClass[b.stato] || ''}">${b.stato_label}</span></td>
+      <td class="note">${b.note}</td>
+      <td class="id">Fg.${b.foglio} P.${b.particella} Sub.${b.sub}<br><span style="color:#ccc;">${b.id_open || b.id_anbsc}</span></td>
+    </tr>
+  `).join('');
+  document.getElementById('no-results').style.display = data.length === 0 ? 'block' : 'none';
+  document.getElementById('result-count').innerHTML =
+    `<strong>${data.length}</strong> / ${beni.length} beni mostrati`;
+  updateStats(data);
+}
+
+// ── Filtro
+let sortCol = null, sortDir = 1;
+
+function applyFilters() {
+  const q     = document.getElementById('search-input').value.toLowerCase().trim();
+  const fTipo = document.getElementById('f-tipo').value;
+  const fStato = document.getElementById('f-stato').value;
+  const fZona  = document.getElementById('f-zona').value;
+
+  let filtered = beni.filter(b => {
+    if (fTipo && b.tipo !== fTipo) return false;
+    if (fStato && b.stato !== fStato) return false;
+    if (fZona && !b.zona.includes(fZona)) return false;
+    if (q) {
+      const hay = [b.num, b.tipo, b.consistenza, b.indirizzo, b.zona, b.stato_label, b.note, b.foglio, b.particella, b.id_open, b.id_anbsc].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (sortCol) {
+    filtered.sort((a, b) => {
+      let av = a[sortCol] || '', bv = b[sortCol] || '';
+      return av.localeCompare(bv, 'it') * sortDir;
+    });
+  }
+
+  renderTable(filtered);
+}
+
+// ── Events
+document.getElementById('search-input').addEventListener('input', applyFilters);
+document.getElementById('search-clear').addEventListener('click', () => {
+  document.getElementById('search-input').value = '';
+  applyFilters();
+});
+['f-tipo','f-stato','f-zona'].forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
+document.getElementById('reset-filters').addEventListener('click', () => {
+  document.getElementById('search-input').value = '';
+  document.getElementById('f-tipo').value = '';
+  document.getElementById('f-stato').value = '';
+  document.getElementById('f-zona').value = '';
+  applyFilters();
+});
+
+// ── Sort colonne
+document.querySelectorAll('.bc-table thead th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll('.bc-table thead th').forEach(h => h.classList.remove('sort-asc','sort-desc'));
+    th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+    applyFilters();
+  });
+});
+
+// ── Init
+renderTable(beni);
+</script>
+</body>
+</html>
