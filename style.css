@@ -36,6 +36,42 @@ body {
   padding: 0 16px 60px;
 }
 
+/* ── NAVBAR ─────────────────────────────────────── */
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #1a2e1a;
+  padding: 0 16px;
+  border-radius: 0 0 10px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.site-nav a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(255,255,255,.7);
+  text-decoration: none;
+  font-size: .82rem;
+  font-weight: 500;
+  padding: 11px 14px;
+  border-radius: 6px;
+  transition: background .2s, color .2s;
+  white-space: nowrap;
+}
+.site-nav a:hover { background: rgba(255,255,255,.08); color: #fff; }
+.site-nav a.active { color: #fff; background: rgba(255,255,255,.12); }
+.site-nav .nav-spacer { flex: 1; }
+.site-nav .nav-brand {
+  font-family: 'DM Serif Display', serif;
+  font-size: .9rem;
+  color: rgba(255,255,255,.55);
+  padding: 11px 4px;
+  letter-spacing: .01em;
+}
+
 /* ── HEADER ─────────────────────────────────────── */
 header {
   padding: 36px 0 24px;
