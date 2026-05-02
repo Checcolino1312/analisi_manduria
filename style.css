@@ -40,37 +40,72 @@ body {
 .site-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
-  background: #1a2e1a;
-  padding: 0 16px;
-  border-radius: 0 0 10px 10px;
+  gap: 2px;
+  background: #0f1f0f;
+  padding: 0 20px;
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 0 rgba(255,255,255,.06), 0 2px 12px rgba(0,0,0,.25);
 }
+.site-nav .nav-brand {
+  font-family: 'DM Serif Display', serif;
+  font-size: .88rem;
+  color: rgba(255,255,255,.38);
+  padding: 13px 0;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.site-nav .nav-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(255,255,255,.1);
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+.site-nav .nav-spacer { flex: 1; }
 .site-nav a {
   display: flex;
   align-items: center;
-  gap: 7px;
-  color: rgba(255,255,255,.7);
+  gap: 6px;
+  color: rgba(255,255,255,.55);
   text-decoration: none;
-  font-size: .82rem;
+  font-size: .8rem;
   font-weight: 500;
-  padding: 11px 14px;
-  border-radius: 6px;
-  transition: background .2s, color .2s;
+  letter-spacing: .01em;
+  padding: 0 12px;
+  height: 44px;
+  border-radius: 0;
+  position: relative;
+  transition: color .18s;
   white-space: nowrap;
 }
-.site-nav a:hover { background: rgba(255,255,255,.08); color: #fff; }
-.site-nav a.active { color: #fff; background: rgba(255,255,255,.12); }
-.site-nav .nav-spacer { flex: 1; }
-.site-nav .nav-brand {
-  font-family: 'DM Serif Display', serif;
-  font-size: .9rem;
-  color: rgba(255,255,255,.55);
-  padding: 11px 4px;
-  letter-spacing: .01em;
+.site-nav a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: #4ade80;
+  border-radius: 2px 2px 0 0;
+  opacity: 0;
+  transform: scaleX(.4);
+  transition: opacity .18s, transform .18s;
 }
+.site-nav a:hover { color: rgba(255,255,255,.85); }
+.site-nav a:hover::after { opacity: .4; transform: scaleX(1); }
+.site-nav a.active { color: #fff; }
+.site-nav a.active::after { opacity: 1; transform: scaleX(1); }
+.site-nav .nav-icon {
+  width: 18px;
+  height: 18px;
+  opacity: .7;
+  flex-shrink: 0;
+}
+.site-nav a.active .nav-icon { opacity: 1; }
 
 /* ── HEADER ─────────────────────────────────────── */
 header {
